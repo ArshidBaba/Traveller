@@ -3,6 +3,9 @@
 # Let the DB start
 python ./app/backend_pre_start.py
 
+# Generate migrations
+# alembic revision --autogenerate 
+
 # Run migrations
 alembic upgrade head
 

@@ -1,16 +1,23 @@
 import asyncio
 from typing import Any, Optional
 
-import httpx
+# import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.crud.crud_location import CRUDLocation
+
+# from app.crud.crud_location import CRUDLocation
 from app.api import deps
 
 from app.schemas.recipe import Recipe, RecipeCreate, RecipeSearchResults
-from app.schemas.location import Location, LocationCreate, LocationSearchResults
+from app.schemas.location import (
+    Location,
+    LocationBase,
+    LocationCreate,
+    LocationSearchResults,
+    LocationUpdate,
+)
 
 router = APIRouter()
 # RECIPE_SUBREDDITS = ["recipes", "easyrecipes", "TopSecretRecipes"]
@@ -25,7 +32,7 @@ def fetch_location(
     """
     Fetch a single recipe by ID
     """
-    result = crud.recipe.get(db=db, id=location_id)
+    result = crud.location.get(db=db, id=location_id)
     if not result:
         # the exception is raised, not returned - you will get a validation
         # error otherwise.
@@ -46,10 +53,12 @@ def search_locations(
     """
     Search for recipes based on label keyword
     """
-    locations = crud.recipe.get_multi(db=db, limit=max_results)
-    results = filter(lambda recipe: keyword.lower() in recipe.label.lower(), locations)
+    locations = crud.location.get_multi(db=db, limit=max_results)
+    results = filter(
+        lambda location: keyword.lower() in location.name.lower(), locations
+    )
 
-    return {"locations": list(locations)}
+    return {"results": list(results)}
 
 
 @router.post("/", status_code=201, response_model=Location)
@@ -60,6 +69,20 @@ def create_location(
     Create a new recipe in the database.
     """
     location = crud.location.create(db=db, obj_in=location_in)
+
+    return location
+
+
+@router.put("/{location_id}", status_code=200, response_model=LocationUpdate)
+def update_location(
+    *, location_id: int, location_in: LocationUpdate, db: Session = Depends(deps.get_db)
+) -> Any:
+    """
+    Updates a single Location.
+    """
+
+    db_obj = crud.location.get(db=db, id=location_id)
+    location = crud.location.update(db_obj=db_obj, obj_in=location_in, db=db)
 
     return location
 

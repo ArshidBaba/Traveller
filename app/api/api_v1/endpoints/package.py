@@ -10,7 +10,13 @@ from app import crud
 
 from app.api import deps
 
-from app.schemas.package import Package, PackageBase, PackageCreate, PackageUpdate
+from app.schemas.package import (
+    Package,
+    PackageBase,
+    PackageCreate,
+    PackageSearchResults,
+    PackageUpdate,
+)
 
 router = APIRouter()
 
@@ -27,19 +33,6 @@ def create_package(
     return package
 
 
-# @router.put("/{location_id}", status_code=200, response_model=LocationUpdate)
-# def update_location(
-#     *, location_id: int, location_in: LocationUpdate, db: Session = Depends(deps.get_db)
-# ) -> Any:
-#     """
-#     Updates a single Location.
-#     """
-
-#     db_obj = crud.location.get(db=db, id=location_id)
-#     location = crud.location.update(db_obj=db_obj, obj_in=location_in, db=db)
-
-
-#     return location
 @router.put("/{package_id}", status_code=200, response_model=Package)
 def update_package(
     *, package_id: int, package_in: PackageUpdate, db: Session = Depends(deps.get_db)
@@ -52,3 +45,27 @@ def update_package(
     package = crud.package.update(db_obj=db_obj, obj_in=package_in, db=db)
 
     return package
+
+
+# @router.get("/", status_code=200, response_model=LocationSearchResults)
+# def fetch_locations(
+#     *, max_results: Optional[int] = 10, db: Session = Depends(deps.get_db)
+# ) -> dict:
+#     """
+#     Get all locations
+#     """
+#     locations = crud.location.get_multi(db=db, limit=max_results)
+
+#     return {"results": locations}
+
+
+@router.get("/", status_code=200, response_model=PackageSearchResults)
+def fetch_packages(
+    *, max_results: Optional[int] = 10, db: Session = Depends(deps.get_db)
+) -> dict:
+    """
+    Get all Packages.
+    """
+    packages = crud.package.get_multi(db=db, limit=max_results)
+
+    return {"results": packages}

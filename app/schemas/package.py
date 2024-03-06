@@ -23,3 +23,7 @@ class Package(PackageBase):
 
 class PackageUpdate(PackageBase):
     name: str
+
+
+class PackageSearchResults(BaseModel):
+    results: Sequence[Package]

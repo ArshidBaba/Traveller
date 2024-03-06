@@ -53,7 +53,6 @@ def fetch_locations(
     Get all locations
     """
     locations = crud.location.get_multi(db=db, limit=max_results)
-    print("+++++++++", locations, "++++++++++++")
 
     return {"results": locations}
 

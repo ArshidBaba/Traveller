@@ -48,15 +48,18 @@ class LocationInDBBase(LocationBase):
 
 # # Properties to return to client
 class Location(LocationInDBBase):
-    # pass
+    pass
     # id: int
-    name: str
-    description: str
+    # name: str
+    # description: str
+
+    # class Config:
+    #     orm_mode = True
 
 
 # # Properties properties stored in DB
 class LocationInDB(LocationInDBBase):
-    pass
+    results: Sequence[Location]
 
 
 class LocationSearchResults(BaseModel):

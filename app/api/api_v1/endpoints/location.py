@@ -15,6 +15,8 @@ from app.schemas.location import (
     Location,
     LocationBase,
     LocationCreate,
+    LocationInDB,
+    LocationInDBBase,
     LocationSearchResults,
     LocationUpdate,
 )
@@ -41,6 +43,19 @@ def fetch_location(
         )
 
     return result
+
+
+@router.get("/", status_code=200, response_model=LocationSearchResults)
+def fetch_locations(
+    *, max_results: Optional[int] = 10, db: Session = Depends(deps.get_db)
+) -> dict:
+    """
+    Get all locations
+    """
+    locations = crud.location.get_multi(db=db, limit=max_results)
+    print("+++++++++", locations, "++++++++++++")
+
+    return {"results": locations}
 
 
 @router.get("/search/", status_code=200, response_model=LocationSearchResults)

@@ -72,23 +72,6 @@ def fetch_package(*, package_id: int, db: Session = Depends(deps.get_db)) -> Any
     return result
 
 
-# @router.get("/search/", status_code=200, response_model=LocationSearchResults)
-# def search_locations(
-#     *,
-#     keyword: str = Query(None, min_length=3, example="Pahalgam"),
-#     max_results: Optional[int] = 10,
-#     db: Session = Depends(deps.get_db),
-# ) -> dict:
-#     """
-#     Search for recipes based on label keyword
-#     """
-#     locations = crud.location.get_multi(db=db, limit=max_results)
-#     results = filter(
-#         lambda location: keyword.lower() in location.name.lower(), locations
-#     )
-
-
-#     return {"results": list(results)}
 @router.get("/search/", status_code=200, response_model=PackageSearchResults)
 def search_packages(
     *,

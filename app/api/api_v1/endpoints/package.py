@@ -59,25 +59,6 @@ def fetch_packages(
     return {"results": packages}
 
 
-# @router.get("/{location_id}", status_code=200, response_model=Location)
-# def fetch_location(
-#     *,
-#     location_id: int,
-#     db: Session = Depends(deps.get_db),
-# ) -> Any:
-#     """
-#     Fetch a single recipe by ID
-#     """
-#     result = crud.location.get(db=db, id=location_id)
-#     if not result:
-#         # the exception is raised, not returned - you will get a validation
-#         # error otherwise.
-#         raise HTTPException(
-#             status_code=404, detail=f"Recipe with ID {location_id} not found"
-#         )
-
-
-#     return result
 @router.get("/{package_id}", status_code=200, response_model=Package)
 def fetch_package(*, package_id: int, db: Session = Depends(deps.get_db)) -> Any:
     """
@@ -89,3 +70,35 @@ def fetch_package(*, package_id: int, db: Session = Depends(deps.get_db)) -> Any
             status_code=404, detail=f"Package with ID {package_id} not found"
         )
     return result
+
+
+# @router.get("/search/", status_code=200, response_model=LocationSearchResults)
+# def search_locations(
+#     *,
+#     keyword: str = Query(None, min_length=3, example="Pahalgam"),
+#     max_results: Optional[int] = 10,
+#     db: Session = Depends(deps.get_db),
+# ) -> dict:
+#     """
+#     Search for recipes based on label keyword
+#     """
+#     locations = crud.location.get_multi(db=db, limit=max_results)
+#     results = filter(
+#         lambda location: keyword.lower() in location.name.lower(), locations
+#     )
+
+
+#     return {"results": list(results)}
+@router.get("/search/", status_code=200, response_model=PackageSearchResults)
+def search_packages(
+    *,
+    keyword: str = Query(None, min_length=3, example="Deluxe"),
+    max_results: Optional[int] = 10,
+    db: Session = Depends(deps.get_db),
+) -> dict:
+    """
+    Search for packages based on name keyword.
+    """
+    packages = crud.location.get_multi(db=db, limit=max_results)
+    results = filter(lambda package: keyword.lower() in package.name.lower(), packages)
+    return {"results": packages}
